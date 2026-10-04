@@ -1,0 +1,8 @@
+{
+  "name": "PALUGADA Alat Berat - Rental & GPS Fleet Tracking",
+  "description": "Platform penyewaan alat berat terpercaya di Pontianak & Kalimantan Barat dengan sistem reservasi online cepat, upload video akses lokasi, dan pelacakan armada GPS real-time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
