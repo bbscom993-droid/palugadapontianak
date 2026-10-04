@@ -38,28 +38,75 @@ export const InformationCenter: React.FC<InformationCenterProps> = ({ onOpenBook
     { key: 'PANDUAN_SEWA', label: 'Panduan Sewa & Kontrak' },
   ];
 
-  const faqs = [
+  interface FAQItem {
+    q: string;
+    a: string;
+    category: 'MAINTENANCE' | 'REPLACEMENT' | 'INSURANCE' | 'KONTRAK';
+    tag: string;
+  }
+
+  const [faqCategoryFilter, setFaqCategoryFilter] = useState<string>('ALL');
+  const [faqSearchQuery, setFaqSearchQuery] = useState<string>('');
+
+  const faqs: FAQItem[] = [
     {
-      q: 'Apa dokumen legalitas yang dibutuhkan perusahaan untuk menyewa alat berat?',
-      a: 'Penyewa korporat (PT/CV/BUMN) cukup melampirkan NIB (Nomor Induk Berusaha), NPWP Perusahaan, KTP Penanggung Jawab (PIC), serta Surat Perintah Kerja (SPK) proyek. Sistem reservasi online Palugada menerbitkan draft SPK digital seketika.',
+      q: 'Apa saja pembagian tanggung jawab pemeliharaan (maintenance) antara Palugada dan Penyewa?',
+      a: 'Palugada bertanggung jawab penuh atas seluruh jadwal Perawatan Preventif Berkala (Routine Preventive Maintenance) setiap siklus 250 HM, 500 HM, dan 1000 HM—termasuk penyediaan oli mesin resmi, filter solar, filter hidrolik, dan teknisi mekanik bersertifikat. Pihak penyewa hanya bertanggung jawab atas Daily Pre-Operation Inspection (pemeriksaan level oli harian, air radiator, pengisian grease pin boom setiap shift kerja) dan memastikan penggunaan bahan bakar Biosolar B35 / Dexlite murni tanpa kontaminasi air.',
+      category: 'MAINTENANCE',
+      tag: 'Tanggung Jawab Pemeliharaan',
     },
     {
-      q: 'Bagaimana penghitungan jam kerja jika terjadi hujan lebat di lokasi proyek (Rainy Days)?',
-      a: 'Sesuai klausul standar kontrak sewa kami, hari hujan lebat yang mengakibatkan penghentian pekerjaan oleh Site Manager / HSE proyek tidak dikenakan biaya konsumsi bahan bakar. Untuk sewa bulanan dengan minimum cas 200 HM, jam yang hilang dapat dikompensasikan pada hari kerja berikutnya dalam periode sewa yang sama.',
+      q: 'Bagaimana prosedur dan klausul Kebijakan Penggantian Unit (Unit Replacement Policy)?',
+      a: 'Palugada memberlakukan Garansi SLA Unit Pengganti 1x24 Jam resmi. Apabila unit mengalami kendala mekanikal atau hidrolik mayor di lapangan dan estimasi perbaikan oleh Mobile Service Mechanic kami melebihi 12 jam, Palugada wajib memberangkatkan unit pengganti sekelas (equal capacity) langsung dari pool terdekat ke lokasi proyek. Seluruh biaya pengangkutan trailer lowbed (mobilisasi-demobilisasi) untuk unit pengganti 100% ditanggung oleh Palugada tanpa membebani anggaran penyewa.',
+      category: 'REPLACEMENT',
+      tag: 'Kebijakan Unit Pengganti 1x24 Jam',
+    },
+    {
+      q: 'Apakah unit alat berat Palugada telah dilindungi asuransi dan bagaimana cakupannya?',
+      a: 'Ya, seluruh armada Palugada dilindungi oleh Polis Asuransi Alat Berat Konstruksi Komprehensif (Contractor’s Plant and Machinery / CPM All-Risk Insurance) yang mencakup risiko kebakaran, amblas tanah ekstrim, tabrakan, dan kerusakan struktur rangka mesin. Kami juga menyediakan opsi perluasan Third Party Liability (TPL) untuk ganti rugi pihak ketiga di lokasi kerja. Pengecualian klaim asuransi hanya berlaku bila unit dioperasikan oleh operator non-resmi tanpa SIO sah atau terjadi pelanggaran batas beban angkat (overloading).',
+      category: 'INSURANCE',
+      tag: 'Cakupan Asuransi CPM & TPL',
+    },
+    {
+      q: 'Bagaimana penyesuaian jam kerja (Hour Meter) bila terjadi kerusakan mesin (breakdown downtime)?',
+      a: 'Sistem telemetri GPS digital kami merekam jam kerja mesin secara presisi. Setiap menit di mana mesin tidak dapat beroperasi akibat breakdown teknis tidak dihitung ke dalam minimum pemakaian jam kerja sewa (Hour Meter Deduction). Catatan timesheet digital otomatis dipause hingga berita acara perbaikan (BAP) ditandatangani oleh Site Manager penyewa.',
+      category: 'MAINTENANCE',
+      tag: 'Downtime & Jam Kerja',
     },
     {
       q: 'Apakah seluruh unit alat berat Palugada telah dilengkapi Surat Ijin Alat (SIA)?',
-      a: 'Benar, 100% armada kami memiliki Surat Ijin Alat (SIA) yang masih aktif dan terdaftar di Kemenaker RI. Operator kami juga memegang Surat Izin Operator (SIO) Kelas 1 resmi sesuai klasifikasi tonase mesin.',
+      a: 'Benar, 100% armada kami memiliki Surat Ijin Alat (SIA) yang masih aktif dan terdaftar di Kemenaker RI. Operator kami juga memegang Surat Izin Operator (SIO) Kelas 1 resmi sesuai klasifikasi tonase mesin, siap diaudit oleh tim HSE kontraktor BUMN.',
+      category: 'KONTRAK',
+      tag: 'Legalitas SIA & SIO',
     },
     {
-      q: 'Bagaimana prosedur penanganan jika unit mengalami kerusakan (breakdown) di lapangan?',
-      a: 'Palugada memiliki tim Mobile Mechanic Service 24 jam dengan respon darurat maksimal 4 jam ke lokasi proyek di area Hub kami. Jika perbaikan membutuhkan waktu lebih dari 12 jam, kami memberlakukan Garansi Ganti Unit Pengganti 1x24 jam tanpa tambahan biaya mobilisasi.',
+      q: 'Bagaimana penghitungan jam kerja jika terjadi hujan lebat di lokasi proyek (Rainy Days)?',
+      a: 'Sesuai klausul standar kontrak sewa kami, hari hujan lebat yang mengakibatkan penghentian pekerjaan resmi oleh Site Manager / HSE proyek (Safety Standstill) tidak dikenakan biaya konsumsi bahan bakar. Untuk sewa bulanan dengan minimum cas 200 HM, jam yang hilang dapat dikompensasikan pada hari kerja berikutnya dalam periode sewa yang sama.',
+      category: 'KONTRAK',
+      tag: 'Kompensasi Cuaca Hujan',
     },
     {
-      q: 'Apakah penyewa boleh menyediakan bahan bakar solar sendiri?',
-      a: 'Boleh. Anda dapat memilih paket "Lepas Kunci" atau "Unit + Operator". Namun bahan bakar yang digunakan wajib memenuhi spesifikasi Biosolar B35 / Dexlite murni tanpa campuran air atau pelarut yang berisiko merusak sistem injeksi common rail mesin.',
+      q: 'Siapa yang menanggung biaya penggantian suku cadang yang aus wajar (Wear and Tear)?',
+      a: 'Seluruh komponen aus wajar seperti selang hidrolik, seal silinder, kampas rem, v-belt kipas radiator, dan gigi bucket (bucket teeth) dalam batas penggunaan normal merupakan tanggung jawab penuh Palugada dan diganti secara berkala tanpa biaya tambahan.',
+      category: 'MAINTENANCE',
+      tag: 'Suku Cadang & Komponen Aus',
+    },
+    {
+      q: 'Bagaimana mekanisme klaim asuransi jika terjadi insiden di lapangan proyek?',
+      a: 'Jika terjadi insiden, Site Coordinator penyewa cukup melaporkan kronologi singkat dalam 1x24 jam melalui sistem hotline darurat Palugada dan melampirkan foto/video kejadian. Tim surveyor klaim kami akan langsung berkoordinasi dengan pihak asuransi rekanan sehingga pekerjaan proyek dapat segera dilanjutkan tanpa menunggu proses birokrasi klaim yang panjang.',
+      category: 'INSURANCE',
+      tag: 'Prosedur Klaim Cepat',
     },
   ];
+
+  const filteredFaqs = faqs.filter((faq) => {
+    const matchCat = faqCategoryFilter === 'ALL' || faq.category === faqCategoryFilter;
+    const matchSearch =
+      faq.q.toLowerCase().includes(faqSearchQuery.toLowerCase()) ||
+      faq.a.toLowerCase().includes(faqSearchQuery.toLowerCase()) ||
+      faq.tag.toLowerCase().includes(faqSearchQuery.toLowerCase());
+    return matchCat && matchSearch;
+  });
 
   const filteredArticles = articles.filter((art) => {
     const matchesCategory = selectedCategory === 'ALL' || art.category === selectedCategory;
@@ -252,7 +299,7 @@ export const InformationCenter: React.FC<InformationCenterProps> = ({ onOpenBook
 
         {/* FAQ Accordion Section */}
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-10">
+          <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-1.5 text-xs font-mono uppercase tracking-wider text-pink-400 mb-2">
               <HelpCircle className="w-4 h-4" />
               <span>Tanya Jawab Seputar Penyewaan Alat Berat</span>
@@ -260,28 +307,75 @@ export const InformationCenter: React.FC<InformationCenterProps> = ({ onOpenBook
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
               Pertanyaan yang Sering Diajukan (FAQ)
             </h2>
-            <p className="text-xs text-slate-400 mt-2">
-              Informasi praktis seputar mekanisme kontrak sewa, mobilisasi armada, dan garansi operasional.
+            <p className="text-xs text-slate-400 mt-2 max-w-xl mx-auto">
+              Penjelasan resmi seputar tanggung jawab pemeliharaan rutin, jaminan garansi unit pengganti 1x24 jam, serta perlindungan asuransi CPM komprehensif.
             </p>
           </div>
 
-          <div className="space-y-4">
-            {faqs.map((faq, idx) => (
-              <details
-                key={idx}
-                className="group bg-[#111726] border border-slate-800 rounded-xl overflow-hidden text-xs transition-colors open:border-pink-500/40"
-              >
-                <summary className="p-4 sm:p-5 font-bold text-white cursor-pointer list-none flex items-center justify-between gap-4 group-hover:text-pink-400 transition-colors">
-                  <span className="text-sm">{faq.q}</span>
-                  <span className="text-slate-400 group-open:rotate-180 transition-transform font-mono text-base">
-                    ↓
-                  </span>
-                </summary>
-                <div className="p-4 sm:p-5 pt-0 text-slate-300 leading-relaxed border-t border-slate-800/60 bg-slate-900/30">
-                  {faq.a}
-                </div>
-              </details>
-            ))}
+          {/* FAQ Controls & Category Filter */}
+          <div className="space-y-4 mb-6">
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {[
+                { id: 'ALL', label: 'Semua Topik' },
+                { id: 'MAINTENANCE', label: 'Tanggung Jawab Pemeliharaan' },
+                { id: 'REPLACEMENT', label: 'Kebijakan Unit Pengganti (1x24 Jam)' },
+                { id: 'INSURANCE', label: 'Cakupan Asuransi CPM & TPL' },
+                { id: 'KONTRAK', label: 'Kontrak, SIA/SIO & Operasional' },
+              ].map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setFaqCategoryFilter(c.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    faqCategoryFilter === c.id
+                      ? 'bg-pink-600 text-white shadow-md shadow-pink-600/30'
+                      : 'bg-[#111726] text-slate-400 hover:text-white border border-slate-800'
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative max-w-md mx-auto">
+              <input
+                type="text"
+                value={faqSearchQuery}
+                onChange={(e) => setFaqSearchQuery(e.target.value)}
+                placeholder="Cari FAQ pemeliharaan, asuransi, garansi unit..."
+                className="w-full bg-[#111726] border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-pink-500"
+              />
+              <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {filteredFaqs.length === 0 ? (
+              <div className="text-center py-8 bg-[#111726] rounded-xl border border-slate-800 text-slate-400 text-xs">
+                Tidak ada pertanyaan yang sesuai dengan kata kunci pencarian.
+              </div>
+            ) : (
+              filteredFaqs.map((faq, idx) => (
+                <details
+                  key={idx}
+                  className="group bg-[#111726] border border-slate-800 rounded-xl overflow-hidden text-xs transition-colors open:border-pink-500/40"
+                >
+                  <summary className="p-4 sm:p-5 font-bold text-white cursor-pointer list-none flex items-center justify-between gap-4 group-hover:text-pink-400 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-slate-800 text-pink-400 border border-slate-700 shrink-0">
+                        {faq.tag}
+                      </span>
+                      <span className="text-sm">{faq.q}</span>
+                    </div>
+                    <span className="text-slate-400 group-open:rotate-180 transition-transform font-mono text-base shrink-0">
+                      ↓
+                    </span>
+                  </summary>
+                  <div className="p-4 sm:p-5 pt-0 text-slate-300 leading-relaxed border-t border-slate-800/60 bg-slate-900/30">
+                    {faq.a}
+                  </div>
+                </details>
+              ))
+            )}
           </div>
 
           {/* Hotline CTA */}

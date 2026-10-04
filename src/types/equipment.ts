@@ -33,6 +33,12 @@ export interface Equipment {
   features: string[];
   recommendedUses: string[];
   siaCertValidUntil: string;
+  isImmediateDispatchAvailable?: boolean;
+  readyStockCount?: number;
+  dispatchPoolLocation?: string;
+  dispatchEtaHours?: number;
+  dispatchStatus?: 'READY_IMMEDIATE' | 'DEPLOYED_RETURNING_SOON' | 'SCHEDULED_MAINTENANCE';
+  nextAvailableDate?: string;
 }
 
 export type MachineStatus = 'WORKING' | 'IDLE' | 'MAINTENANCE' | 'TRANSIT';

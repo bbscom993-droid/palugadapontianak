@@ -14,7 +14,11 @@ import {
   CheckCircle, 
   Scale, 
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Zap,
+  MapPin,
+  Clock,
+  Sparkles
 } from 'lucide-react';
 
 interface EquipmentCatalogProps {
@@ -32,6 +36,11 @@ export const EquipmentCatalog: React.FC<EquipmentCatalogProps> = ({
   const [compareList, setCompareList] = useState<Equipment[]>([]);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [sortBy, setSortBy] = useState<'recommended' | 'price-asc' | 'price-desc'>('recommended');
+  
+  // Real-time Availability Status Checker states
+  const [immediateDispatchOnly, setImmediateDispatchOnly] = useState<boolean>(false);
+  const [checkerLocation, setCheckerLocation] = useState<string>('Pontianak Kota');
+  const [showCheckerInfo, setShowCheckerInfo] = useState<boolean>(false);
 
   const categories = [
     { id: 'all', label: 'Semua Kategori' },
@@ -43,6 +52,17 @@ export const EquipmentCatalog: React.FC<EquipmentCatalogProps> = ({
     { id: 'dump-truck', label: 'Dump Truck' },
   ];
 
+  const destinationOptions = [
+    { name: 'Pontianak Kota (Siantan & Pontianak Barat)', eta: '1.5 - 2.5 Jam', pool: 'Pool Khatulistiwa KM 8', distance: '12 KM' },
+    { name: 'Kubu Raya & Bandara Supadio', eta: '2 - 3 Jam', pool: 'Pool Arteri Supadio', distance: '18 KM' },
+    { name: 'Mempawah & Terminal Pelabuhan Kijing', eta: '3 - 4 Jam', pool: 'Pool Khatulistiwa / Kijing Corridor', distance: '65 KM' },
+    { name: 'Singkawang & Sambas (Perbatasan Aruk)', eta: '5 - 6 Jam', pool: 'Hub Pantura Kalbar', distance: '145 KM' },
+    { name: 'Sanggau / Tayan (Smelter Bauksit)', eta: '4 - 5 Jam', pool: 'Trans-Kalimantan Hub', distance: '110 KM' },
+    { name: 'Ketapang & Kendawangan (Bauksit Mine)', eta: '1 - 2 Hari (Via LCT Ponton)', pool: 'Pelabuhan Sungai Ketapang', distance: '210 KM' },
+  ];
+
+  const currentDestination = destinationOptions.find((d) => d.name.startsWith(checkerLocation)) || destinationOptions[0];
+
   const filteredEquipment = useMemo(() => {
     return EQUIPMENT_LIST.filter((item) => {
       const matchCategory = activeCategory === 'all' || item.category === activeCategory;
@@ -51,13 +71,14 @@ export const EquipmentCatalog: React.FC<EquipmentCatalogProps> = ({
         item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchCategory && matchSearch;
+      const matchDispatch = !immediateDispatchOnly || item.isImmediateDispatchAvailable === true;
+      return matchCategory && matchSearch && matchDispatch;
     }).sort((a, b) => {
       if (sortBy === 'price-asc') return a.hourlyRate - b.hourlyRate;
       if (sortBy === 'price-desc') return b.hourlyRate - a.hourlyRate;
       return 0;
     });
-  }, [activeCategory, searchQuery, sortBy]);
+  }, [activeCategory, searchQuery, sortBy, immediateDispatchOnly]);
 
   const toggleCompare = (item: Equipment) => {
     if (compareList.some((c) => c.id === item.id)) {
